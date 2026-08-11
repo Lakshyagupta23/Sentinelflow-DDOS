@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1779016847548,
+      "tag": "0000_overrated_landau",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1779016997628,
+      "tag": "0001_absurd_bullseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1780380794095,
+      "tag": "0002_shiny_texas_twister",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1781184900365,
+      "tag": "0003_heavy_skullbuster",
+      "breakpoints": true
+    }
+  ]
+}

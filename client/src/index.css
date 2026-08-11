@@ -1,0 +1,548 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Space Grotesk", "Inter", sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Premium gradient brand colors */
+  --primary: #00a2e0;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #00a2e0;
+  --sidebar-primary-foreground: #ffffff;
+  
+  /* Premium chart colors - vibrant and distinct */
+  --chart-1: #00f2ff; /* Bright Cyan */
+  --chart-2: #3b82f6; /* Deep Blue */
+  --chart-3: #7c3aed; /* Indigo */
+  --chart-4: #f97316; /* Vibrant Orange */
+  --chart-5: #ef4444; /* Bright Red */
+  
+  /* Severity colors */
+  --severity-critical: #ef4444;
+  --severity-high: #f97316;
+  --severity-medium: #eab308;
+  --severity-low: #22c55e;
+  
+  /* Status colors */
+  --status-ongoing: #3b82f6;
+  --status-mitigated: #a855f7;
+  --status-resolved: #22c55e;
+  
+  --radius: 0.75rem;
+  --background: #f5f8f8;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #7c3aed;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #00a2e0;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #00a2e0;
+}
+
+.dark {
+  --primary: #00f2ff;
+  --primary-foreground: #09090b;
+  --sidebar-primary: #00f2ff;
+  --sidebar-primary-foreground: #09090b;
+  
+  --background: #09090b;
+  --foreground: #f5f8f8;
+  --card: #18181b;
+  --card-foreground: #f5f8f8;
+  --popover: #18181b;
+  --popover-foreground: #f5f8f8;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #b020ff;
+  --accent-foreground: #f5f8f8;
+  --destructive: #ff2a2a;
+  --destructive-foreground: #f5f8f8;
+  --border: rgba(0, 242, 255, 0.15);
+  --input: rgba(0, 242, 255, 0.1);
+  --ring: #00f2ff;
+  --sidebar: #09090b;
+  --sidebar-foreground: #f5f8f8;
+  --sidebar-accent: rgba(24, 24, 27, 0.8);
+  --sidebar-accent-foreground: #f5f8f8;
+  --sidebar-border: rgba(0, 242, 255, 0.1);
+  --sidebar-ring: #00f2ff;
+
+  /* Custom chart colors in dark mode */
+  --chart-1: #00f2ff; /* Cyber Cyan */
+  --chart-2: #b020ff; /* Cyber Purple */
+  --chart-3: #00ff66; /* Cyber Green */
+  --chart-4: #ff9f1a; /* Cyber Orange */
+  --chart-5: #ff2a2a; /* Cyber Red */
+
+  /* Cyber Severity colors */
+  --severity-critical: #ff2a2a;
+  --severity-high: #ff9f1a;
+  --severity-medium: #e6ff1a;
+  --severity-low: #00ff66;
+
+  /* Cyber Status colors */
+  --status-ongoing: #00f2ff;
+  --status-mitigated: #b020ff;
+  --status-resolved: #00ff66;
+}
+
+/* Premium animations */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(6, 182, 212, 0.6);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Utility classes for animations */
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background-size: 1000px 100%;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.5s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.5s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
+}
+
+/* Premium card styles */
+.card-elevated {
+  @apply bg-card border border-border shadow-lg transition-all duration-300 hover:shadow-xl hover:border-accent/30;
+}
+
+.card-gradient {
+  @apply bg-gradient-to-br from-card via-card to-card/80 border border-border/50 shadow-lg;
+}
+
+.card-glass {
+  @apply bg-card/50 backdrop-blur-md border border-border/30 shadow-lg;
+}
+
+/* Premium badge styles */
+.badge-critical {
+  @apply bg-red-100 text-red-900 border border-red-300 font-semibold;
+}
+
+.badge-high {
+  @apply bg-orange-100 text-orange-900 border border-orange-300 font-semibold;
+}
+
+.badge-medium {
+  @apply bg-yellow-100 text-yellow-900 border border-yellow-300 font-semibold;
+}
+
+.badge-low {
+  @apply bg-green-100 text-green-900 border border-green-300 font-semibold;
+}
+
+.badge-ongoing {
+  @apply bg-blue-100 text-blue-900 border border-blue-300 font-semibold;
+}
+
+.badge-mitigated {
+  @apply bg-purple-100 text-purple-900 border border-purple-300 font-semibold;
+}
+
+.badge-resolved {
+  @apply bg-emerald-100 text-emerald-900 border border-emerald-300 font-semibold;
+}
+
+/* Premium button styles */
+.btn-premium {
+  @apply relative overflow-hidden font-semibold transition-all duration-300 hover:shadow-lg active:scale-95;
+}
+
+.btn-premium::before {
+  @apply absolute inset-0 bg-white/0 transition-all duration-300;
+  content: '';
+}
+
+.btn-premium:hover::before {
+  @apply bg-white/10;
+}
+
+/* Premium gradient backgrounds */
+.gradient-primary {
+  @apply bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-400;
+}
+
+.gradient-accent {
+  @apply bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600;
+}
+
+.gradient-danger {
+  @apply bg-gradient-to-br from-red-600 via-orange-500 to-red-400;
+}
+
+/* Premium text styles */
+.text-gradient {
+  @apply bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 bg-clip-text text-transparent;
+}
+
+.text-glow {
+  @apply text-foreground drop-shadow-lg;
+}
+
+/* Premium borders */
+.border-gradient {
+  @apply relative border border-transparent;
+  background: linear-gradient(var(--card), var(--card)) padding-box,
+    linear-gradient(135deg, #0ea5e9, #06b6d4) border-box;
+}
+
+/* Smooth transitions are built into Tailwind */
+
+/* Premium shadows */
+.shadow-glow {
+  @apply shadow-lg shadow-cyan-500/20;
+}
+
+.shadow-glow-sm {
+  @apply shadow-md shadow-cyan-500/10;
+}
+
+.shadow-glow-lg {
+  @apply shadow-2xl shadow-cyan-500/30;
+}
+
+/* Backdrop blur */
+.backdrop-blur-premium {
+  @apply backdrop-blur-xl bg-white/5;
+}
+
+/* Focus states */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
+}
+
+.focus-ring-dark {
+  @apply focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background;
+}
+
+/* Container queries */
+.container {
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+/* Flex utilities */
+.flex {
+  @apply flex min-w-0 min-h-0;
+}
+
+/* Button base styles */
+button, [role="button"] {
+  @apply transition-all duration-300;
+}
+
+/* Input focus styles */
+input:focus, textarea:focus, select:focus {
+  @apply ring-2 ring-accent ring-offset-2 ring-offset-background;
+}
+
+/* Link hover effects */
+a {
+  @apply transition-all duration-300;
+}
+
+a:hover {
+  @apply text-accent;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full hover:bg-accent;
+}
+
+/* Selection styling */
+::selection {
+  @apply bg-accent text-accent-foreground;
+}
+
+/* Placeholder styling */
+::placeholder {
+  @apply text-muted-foreground;
+}
+
+/* Premium grid layout */
+.grid-premium {
+  @apply grid gap-6;
+}
+
+/* Premium flex layout */
+.flex-premium {
+  @apply flex items-center justify-between;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .container {
+    @apply px-3;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    @apply hidden;
+  }
+}
+
+/* =============================================================================
+   Stitch UI Custom Styles - Cyber-Neon HUD Theme
+   ============================================================================= */
+
+.glass-card, .glass {
+  background: rgba(24, 24, 27, 0.6) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(0, 242, 255, 0.15) !important;
+}
+
+.neon-glow-primary, .neon-glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.4) !important;
+}
+
+.neon-glow-purple {
+  box-shadow: 0 0 15px rgba(176, 32, 255, 0.4) !important;
+}
+
+.neon-glow-green {
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4) !important;
+}
+
+.neon-border-cyan {
+  border: 1px solid rgba(0, 242, 255, 0.5) !important;
+}
+
+.hud-border {
+  border: 1px solid rgba(0, 242, 255, 0.2) !important;
+  position: relative !important;
+}
+
+.hud-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #00f2ff;
+  border-left: 2px solid #00f2ff;
+}
+
+.hud-border::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid #00f2ff;
+  border-right: 2px solid #00f2ff;
+}
