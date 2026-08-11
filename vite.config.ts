@@ -150,7 +150,14 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
+const isSandbox = !!process.env.VITE_APP_ID || !!process.env.OAUTH_SERVER_URL;
+
+const plugins = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  ...(isSandbox ? [vitePluginManusRuntime(), vitePluginManusDebugCollector()] : [])
+];
 
 export default defineConfig({
   plugins,
@@ -170,20 +177,24 @@ export default defineConfig({
   },
   server: {
     host: true,
-    allowedHosts: [
-      ".manuspre.computer",
-      ".manus.computer",
-      ".manus-asia.computer",
-      ".manuscomputer.ai",
-      ".manusvm.computer",
-      "localhost",
-      "127.0.0.1",
-    ],
-    hmr: {
-      protocol: "wss",
-      host: "3000-iwuh5myauo62bopyc1k8v-08f2ffb7.sg1.manus.computer",
-      port: 443,
-    },
+    allowedHosts: isSandbox
+      ? [
+          ".manuspre.computer",
+          ".manus.computer",
+          ".manus-asia.computer",
+          ".manuscomputer.ai",
+          ".manusvm.computer",
+          "localhost",
+          "127.0.0.1",
+        ]
+      : ["localhost", "127.0.0.1"],
+    hmr: isSandbox
+      ? {
+          protocol: "wss",
+          host: "3000-iwuh5myauo62bopyc1k8v-08f2ffb7.sg1.manus.computer",
+          port: 443,
+        }
+      : undefined,
     fs: {
       strict: true,
       deny: ["**/.*"],
