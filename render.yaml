@@ -1,0 +1,27 @@
+services:
+  # 1. Python ML Anomaly Detection Service
+  - type: web
+    name: sentinelflow-ml-service
+    env: python
+    rootDir: ml-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn ml_service:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+  # 2. Node.js Express Backend & React Frontend Server
+  - type: web
+    name: sentinelflow-web-server
+    env: node
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Will prompt user for their TiDB Cloud MySQL URL during deploy
+      - key: ML_SERVICE_URL
+        fromService:
+          name: sentinelflow-ml-service
+          type: web
+          property: host
