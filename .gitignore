@@ -116,7 +116,6 @@ client/public/__manus__/
 # Python environment and compilation artifacts
 ml-service/.venv/
 ml-service/__pycache__/
-ml-service/model.joblib
 *.pyc
 *.pyo
 *.pyd
