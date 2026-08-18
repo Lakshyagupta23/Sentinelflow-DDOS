@@ -12,7 +12,7 @@ services:
   - type: web
     name: sentinelflow-web-server
     env: node
-    buildCommand: pnpm install && pnpm build
+    buildCommand: pnpm install && pnpm build && pnpm db:push
     startCommand: pnpm start
     plan: free
     envVars:
