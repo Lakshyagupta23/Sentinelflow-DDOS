@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Globe, Shield, TrendingUp } from "lucide-react";
+import { AlertTriangle, Globe, Shield, TrendingUp, Search } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import DashboardLayout from "@/components/DashboardLayout";
+import { Spinner } from "@/components/ui/spinner";
 
 const SAMPLE_THREATS = [
   {
@@ -107,256 +109,275 @@ export default function ThreatIntelligenceDashboard() {
   };
 
   const getReputationColor = (reputation: string) => {
-    switch (reputation) {
+    switch (reputation.toLowerCase()) {
       case "malicious":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+        return "border-[#e05a5a]/30 text-[#e05a5a] bg-[#e05a5a]/5 rounded-none font-mono text-[8px] uppercase px-1.5 py-0.5";
       case "suspicious":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+        return "border-[#e6955a]/30 text-[#e6955a] bg-[#e6955a]/5 rounded-none font-mono text-[8px] uppercase px-1.5 py-0.5";
       case "clean":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+        return "border-[#8a9a86]/30 text-[#8a9a86] bg-[#8a9a86]/5 rounded-none font-mono text-[8px] uppercase px-1.5 py-0.5";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "border-[#64748b]/30 text-[#64748b] bg-[#64748b]/5 rounded-none font-mono text-[8px] uppercase px-1.5 py-0.5";
     }
   };
 
   const getThreatLevelColor = (level: string) => {
-    switch (level) {
+    switch (level.toLowerCase()) {
       case "critical":
-        return "text-red-600 dark:text-red-400";
+        return "text-[#e05a5a]";
       case "high":
-        return "text-orange-600 dark:text-orange-400";
+        return "text-[#e6955a]";
       case "medium":
-        return "text-yellow-600 dark:text-yellow-400";
+        return "text-[#d9c06c]";
       case "low":
-        return "text-green-600 dark:text-green-400";
+        return "text-[#8a9a86]";
       default:
-        return "text-gray-600";
+        return "text-[#64748b]";
     }
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-          Threat Intelligence Feed
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Real-time threat intelligence from AlienVault OTX, Shodan, and internal sources
-        </p>
-      </div>
-
-      {/* IP Lookup */}
-      <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 border-blue-200 dark:border-blue-900">
-        <h2 className="text-lg font-semibold mb-4">IP Reputation Lookup</h2>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Enter IP address to enrich..."
-            value={searchIp}
-            onChange={(e) => setSearchIp(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSearchIp()}
-          />
-          <Button 
-            onClick={handleSearchIp} 
-            disabled={lookupQuery.isFetching || isSearching}
-            className="bg-gradient-to-r from-blue-600 to-cyan-600"
-          >
-            {lookupQuery.isFetching ? "Searching..." : "Lookup"}
-          </Button>
+    <DashboardLayout>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="animate-fade-in-up border-l-2 border-[#c5a880] pl-4">
+          <h1 className="text-3xl font-serif text-[#c5a880] uppercase tracking-wider mb-1">Threat Intelligence Feed</h1>
+          <p className="text-xs text-muted-foreground font-mono">Enrich IP telemetry metrics with global threat feeds (AlienVault, Shodan)</p>
         </div>
-      </Card>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Malicious IPs</p>
-              <p className="text-2xl font-bold text-red-600">{threats.filter(t => t.reputation === "malicious").length}</p>
-            </div>
-            <AlertTriangle className="w-8 h-8 text-red-600 opacity-20" />
-          </div>
-        </Card>
-
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Threat Actors</p>
-              <p className="text-2xl font-bold text-orange-600">{THREAT_ACTORS.length}</p>
-            </div>
-            <TrendingUp className="w-8 h-8 text-orange-600 opacity-20" />
-          </div>
-        </Card>
-
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Known Botnets</p>
-              <p className="text-2xl font-bold text-purple-600">18</p>
-            </div>
-            <Globe className="w-8 h-8 text-purple-600 opacity-20" />
-          </div>
-        </Card>
-
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Vulnerabilities</p>
-              <p className="text-2xl font-bold text-cyan-600">156</p>
-            </div>
-            <Shield className="w-8 h-8 text-cyan-600 opacity-20" />
-          </div>
-        </Card>
-      </div>
-
-      {/* Threats */}
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">Known Threats</h2>
-        {isThreatLoading ? (
-          <div className="text-center py-8 text-gray-500">Loading threats...</div>
-        ) : (
-          <div className="space-y-3">
-            {(threats as any[]).map((threat: any) => (
-              <div
-                key={threat.id}
-                className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer transition-colors"
-                onClick={() => setSelectedThreat(threat)}
+        {/* IP Lookup */}
+        <Card className="glass-card rounded-none border-[#c5a880]/15 bg-[#13151a]/20">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase flex items-center gap-2">
+              <Search className="w-4 h-4" />
+              IP Reputation Query Lookup
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Enter IP address to enrich..."
+                value={searchIp}
+                onChange={(e) => setSearchIp(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSearchIp()}
+                className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs focus-visible:ring-1 focus-visible:ring-[#c5a880]"
+              />
+              <Button 
+                onClick={handleSearchIp} 
+                disabled={lookupQuery.isFetching || isSearching}
+                className="bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none px-6"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <code className="text-sm font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                        {threat.sourceIp}
-                      </code>
-                      <Badge className={getReputationColor(threat.reputation || "clean")}>
-                        {threat.reputation || "clean"}
-                      </Badge>
-                      <span className={`text-sm font-semibold ${getThreatLevelColor(threat.threatLevel || "low")}`}>
-                        {(threat.threatLevel || "low").toUpperCase()}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {threat.threatType} • {threat.threatActor}
-                    </p>
-                    {threat.knownBotnets && threat.knownBotnets.length > 0 && (
-                      <div className="mt-2 flex gap-1 flex-wrap">
-                        {threat.knownBotnets.map((botnet: any) => (
-                          <Badge key={botnet} variant="secondary" className="text-xs">
-                            {botnet}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-500">Last seen</p>
-                    <p className="text-sm font-medium">{threat.lastSeen}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
-
-      {/* Threat Actors */}
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">Top Threat Actors</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {THREAT_ACTORS.map((actor) => (
-            <div key={actor.name} className="p-4 border rounded-lg">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="font-semibold">{actor.name}</h3>
-                <Badge variant="destructive">{actor.attacks} attacks</Badge>
-              </div>
-              <div className="space-y-2 text-sm">
-                <p className="text-gray-600 dark:text-gray-400">
-                  Last seen: <span className="font-medium">{actor.lastSeen}</span>
-                </p>
-                <div className="flex gap-1 flex-wrap">
-                  {actor.countries.map((country) => (
-                    <Badge key={country} variant="outline" className="text-xs">
-                      {country}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+                {lookupQuery.isFetching ? "Syncing..." : "Lookup IP"}
+              </Button>
             </div>
-          ))}
-        </div>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Detail Modal */}
-      {selectedThreat && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="max-w-2xl w-full p-6">
-            <div className="flex items-start justify-between mb-4">
-              <h2 className="text-xl font-bold">Threat Details</h2>
-              <button onClick={() => setSelectedThreat(null)} className="text-gray-500 hover:text-gray-700">
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">IP Address</p>
-                  <p className="font-mono font-semibold">{selectedThreat.sourceIp}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Reputation</p>
-                  <Badge className={getReputationColor(selectedThreat.reputation)}>
-                    {selectedThreat.reputation}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Threat Level</p>
-                  <span className={`font-semibold ${getThreatLevelColor(selectedThreat.threatLevel)}`}>
-                    {selectedThreat.threatLevel.toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Threat Type</p>
-                  <p className="font-semibold">{selectedThreat.threatType}</p>
-                </div>
-              </div>
-
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-fade-in-up">
+          <Card className="glass-card rounded-none border-[#c5a880]/15 p-4 bg-[#13151a]/30">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Threat Actor</p>
-                <p className="font-semibold">{selectedThreat.threatActor}</p>
+                <p className="text-[9px] font-mono text-muted-foreground uppercase">Malicious IPs Log</p>
+                <p className="text-xl font-bold font-serif text-[#e05a5a] mt-0.5">{threats.filter(t => t.reputation === "malicious").length}</p>
               </div>
+              <AlertTriangle className="w-6 h-6 text-[#e05a5a] opacity-30" />
+            </div>
+          </Card>
 
-              {selectedThreat.knownBotnets && selectedThreat.knownBotnets.length > 0 && (
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Known Botnets</p>
-                  <div className="flex gap-2 flex-wrap">
-                    {selectedThreat.knownBotnets.map((botnet: string) => (
-                      <Badge key={botnet} variant="secondary">
-                        {botnet}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex gap-2 pt-4">
-                <Button 
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600"
-                  onClick={() => {
-                    handleBlockIp(selectedThreat.sourceIp);
-                    setSelectedThreat(null);
-                  }}
-                  disabled={blockIpMutation.isPending}
-                >
-                  {blockIpMutation.isPending ? "Blocking..." : "Block IP"}
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  Add to Watchlist
-                </Button>
+          <Card className="glass-card rounded-none border-[#c5a880]/15 p-4 bg-[#13151a]/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[9px] font-mono text-muted-foreground uppercase">Monitored Actors</p>
+                <p className="text-xl font-bold font-serif text-[#c5a880] mt-0.5">{THREAT_ACTORS.length}</p>
               </div>
+              <TrendingUp className="w-6 h-6 text-[#c5a880] opacity-30" />
+            </div>
+          </Card>
+
+          <Card className="glass-card rounded-none border-[#c5a880]/15 p-4 bg-[#13151a]/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[9px] font-mono text-muted-foreground uppercase">Known Botnet Signatures</p>
+                <p className="text-xl font-bold font-serif text-[#c5a880] mt-0.5">18</p>
+              </div>
+              <Globe className="w-6 h-6 text-[#c5a880] opacity-30" />
+            </div>
+          </Card>
+
+          <Card className="glass-card rounded-none border-[#c5a880]/15 p-4 bg-[#13151a]/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[9px] font-mono text-muted-foreground uppercase">CVE Vulnerabilities</p>
+                <p className="text-xl font-bold font-serif text-[#c5a880] mt-0.5">156</p>
+              </div>
+              <Shield className="w-6 h-6 text-[#c5a880] opacity-30" />
             </div>
           </Card>
         </div>
-      )}
-    </div>
+
+        {/* Threats List */}
+        <Card className="glass-card rounded-none border-[#c5a880]/15">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Active Threat Log List</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {isThreatLoading ? (
+              <div className="flex justify-center py-8">
+                <Spinner />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {(threats as any[]).map((threat: any) => (
+                  <div
+                    key={threat.id}
+                    className="p-4 border border-[#c5a880]/10 bg-[#13151a]/30 rounded-none hover:border-[#c5a880]/30 cursor-pointer transition-colors"
+                    onClick={() => setSelectedThreat(threat)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <code className="text-xs font-mono text-[#c5a880]">
+                            {threat.sourceIp}
+                          </code>
+                          <Badge className={getReputationColor(threat.reputation || "clean")}>
+                            {threat.reputation || "clean"}
+                          </Badge>
+                          <span className={`text-[10px] font-mono font-semibold uppercase tracking-wider ${getThreatLevelColor(threat.threatLevel || "low")}`}>
+                            {(threat.threatLevel || "low").toUpperCase()}
+                          </span>
+                        </div>
+                        <p className="text-[10px] font-mono text-muted-foreground">
+                          {threat.threatType} • Threat actor group: {threat.threatActor}
+                        </p>
+                        {threat.knownBotnets && threat.knownBotnets.length > 0 && (
+                          <div className="mt-2.5 flex gap-1.5 flex-wrap">
+                            {threat.knownBotnets.map((botnet: any) => (
+                              <Badge key={botnet} className="border-[#c5a880]/30 text-[#c5a880] bg-[#c5a880]/5 rounded-none font-mono text-[7px] uppercase">
+                                {botnet}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] font-mono text-muted-foreground">Last observed</p>
+                        <p className="text-xs font-mono text-[#e2e8f0] mt-1">{threat.lastSeen}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Threat Actors */}
+        <Card className="glass-card rounded-none border-[#c5a880]/15">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Active Threat Actors & Campaign Tracking</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {THREAT_ACTORS.map((actor) => (
+                <div key={actor.name} className="p-4 border border-[#c5a880]/10 bg-[#13151a]/30 rounded-none hover:border-[#c5a880]/30 transition-all duration-300">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0]">{actor.name}</h3>
+                    <Badge className="border-[#e05a5a]/35 text-[#e05a5a] bg-[#e05a5a]/5 rounded-none font-mono text-[8px] uppercase">{actor.attacks} attacks</Badge>
+                  </div>
+                  <div className="space-y-2 text-[10px] font-mono">
+                    <p className="text-muted-foreground">
+                      Last observed online: <span className="text-[#e2e8f0]">{actor.lastSeen}</span>
+                    </p>
+                    <div className="flex gap-1.5 flex-wrap pt-1">
+                      {actor.countries.map((country) => (
+                        <Badge key={country} className="border-[#c5a880]/30 text-[#c5a880] bg-[#c5a880]/5 rounded-none text-[8px] uppercase">
+                          {country}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Detail Modal */}
+        {selectedThreat && (
+          <div className="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50 backdrop-blur-xs">
+            <Card className="max-w-2xl w-full p-6 bg-[#0d0e12] border-[#c5a880]/30 rounded-none animate-fade-in">
+              <div className="flex items-start justify-between mb-4 border-b border-[#c5a880]/10 pb-4">
+                <h2 className="font-serif text-[#c5a880] uppercase tracking-wider text-sm">Threat Enrichment Details</h2>
+                <button onClick={() => setSelectedThreat(null)} className="text-[#c5a880] hover:text-[#e2e8f0] text-sm">
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-4 pt-2">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase">IP Address</p>
+                    <p className="font-mono text-xs text-[#e2e8f0] mt-0.5">{selectedThreat.sourceIp}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase">Reputation Profile</p>
+                    <div className="mt-0.5">
+                      <Badge className={getReputationColor(selectedThreat.reputation)}>
+                        {selectedThreat.reputation}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase">Threat Severity Level</p>
+                    <span className={`font-mono text-xs font-semibold uppercase ${getThreatLevelColor(selectedThreat.threatLevel)}`}>
+                      {selectedThreat.threatLevel.toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase">Threat Type</p>
+                    <p className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0] mt-0.5">{selectedThreat.threatType}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[9px] font-mono text-muted-foreground uppercase mb-1">Threat Actor Group</p>
+                  <p className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0]">{selectedThreat.threatActor}</p>
+                </div>
+
+                {selectedThreat.knownBotnets && selectedThreat.knownBotnets.length > 0 && (
+                  <div>
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase mb-2">Known Botnet Networks</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {selectedThreat.knownBotnets.map((botnet: string) => (
+                        <Badge key={botnet} className="border-[#c5a880]/30 text-[#c5a880] bg-[#c5a880]/5 rounded-none font-mono text-[8px] uppercase">
+                          {botnet}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-4 border-t border-[#c5a880]/10">
+                  <Button 
+                    className="flex-1 bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none h-10"
+                    onClick={() => {
+                      handleBlockIp(selectedThreat.sourceIp);
+                      setSelectedThreat(null);
+                    }}
+                    disabled={blockIpMutation.isPending}
+                  >
+                    {blockIpMutation.isPending ? "Syncing..." : "Block Threat IP"}
+                  </Button>
+                  <Button variant="outline" className="flex-1 border-[#c5a880]/30 bg-transparent hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[10px] uppercase h-10">
+                    Add to Watchlist
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
   );
 }

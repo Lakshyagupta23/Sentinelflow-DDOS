@@ -29,6 +29,14 @@ export function useRealtimeUpdates(options: UseRealtimeUpdatesOptions = {}) {
   const maxReconnectAttempts = 5;
   const reconnectDelay = 3000; // 3 seconds
 
+  // Keep onMessage in a ref to avoid reconnecting when callback identity changes
+  const onMessageRef = useRef(onMessage);
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+  }, [onMessage]);
+
+  const channelsStr = JSON.stringify(channels);
+
   const connect = useCallback(() => {
     if (!user?.id) {
       console.warn("[Realtime] User not authenticated");
@@ -64,7 +72,8 @@ export function useRealtimeUpdates(options: UseRealtimeUpdatesOptions = {}) {
         );
 
         // Subscribe to channels
-        channels.forEach((channel) => {
+        const channelsList: string[] = JSON.parse(channelsStr);
+        channelsList.forEach((channel) => {
           ws.send(
             JSON.stringify({
               type: "subscribe",
@@ -92,9 +101,9 @@ export function useRealtimeUpdates(options: UseRealtimeUpdatesOptions = {}) {
             return;
           }
 
-          // Call custom handler
-          if (onMessage) {
-            onMessage(message);
+          // Call custom handler via ref
+          if (onMessageRef.current) {
+            onMessageRef.current(message);
           }
 
           // Show toast for important messages
@@ -153,7 +162,7 @@ export function useRealtimeUpdates(options: UseRealtimeUpdatesOptions = {}) {
       setConnectionStatus("disconnected");
       toast.error("Failed to connect to real-time server");
     }
-  }, [user, channels, onMessage]);
+  }, [user, channelsStr]);
 
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useRealtimeUpdates } from "@/hooks/useRealtimeUpdates";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Zap, Activity, TrendingUp, RefreshCw, Pause, Play } from "lucide-react";
+import { AlertCircle, Zap, Activity, TrendingUp, RefreshCw, Pause, Play, Clock } from "lucide-react";
 import { toast } from "sonner";
+import DashboardLayout from "@/components/DashboardLayout";
 
 const SAMPLE_LIVE_ATTACKS = [
   {
@@ -122,76 +123,73 @@ export default function RealtimeUpdates() {
   }, [isLive, updateInterval, isConnected]);
 
   const getSeverityColor = (severity: string) => {
-    switch (severity) {
+    switch (severity.toLowerCase()) {
       case "critical":
-        return "bg-red-500/20 text-red-300 border-red-500/50";
+        return "border-[#e05a5a]/30 text-[#e05a5a] bg-[#e05a5a]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5";
       case "high":
-        return "bg-orange-500/20 text-orange-300 border-orange-500/50";
+        return "border-[#e6955a]/30 text-[#e6955a] bg-[#e6955a]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5";
       case "medium":
-        return "bg-amber-500/20 text-amber-300 border-amber-500/50";
+        return "border-[#d9c06c]/30 text-[#d9c06c] bg-[#d9c06c]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5";
       case "low":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/50";
+        return "border-[#8a9a86]/30 text-[#8a9a86] bg-[#8a9a86]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5";
       default:
-        return "bg-slate-500/20 text-slate-300 border-slate-500/50";
+        return "border-[#64748b]/30 text-[#64748b] bg-[#64748b]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5";
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "attack_detected":
-        return <AlertCircle className="w-4 h-4" />;
+        return <AlertCircle className="w-3.5 h-3.5" />;
       case "traffic_spike":
-        return <TrendingUp className="w-4 h-4" />;
+        return <TrendingUp className="w-3.5 h-3.5" />;
       case "anomaly":
-        return <Zap className="w-4 h-4" />;
+        return <Zap className="w-3.5 h-3.5" />;
       default:
-        return <Activity className="w-4 h-4" />;
+        return <Activity className="w-3.5 h-3.5" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-      <div className="max-w-7xl mx-auto">
+    <DashboardLayout>
+      <div className="space-y-8">
         {/* Header */}
-        <div className="mb-8 animate-fade-in">
-          <div className="flex items-center justify-between mb-4">
+        <div className="animate-fade-in-up border-l-2 border-[#c5a880] pl-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
-                <Activity className="w-8 h-8 text-cyan-400 animate-pulse" />
-                Real-Time Monitoring
-              </h1>
-              <p className="text-slate-400">Live threat intelligence and system metrics</p>
+              <h1 className="text-3xl font-serif text-[#c5a880] uppercase tracking-wider mb-1">Real-Time Telemetry</h1>
+              <p className="text-xs text-muted-foreground">Live threat intelligence parser and active network metrics</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-6">
               <div className="text-right">
-                <p className="text-xs text-slate-400">Connection Status</p>
-                <div className="flex items-center gap-2">
+                <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider">WebSocket Status</p>
+                <div className="flex items-center gap-2 justify-end mt-0.5">
                   <div
-                    className={`w-2 h-2 rounded-full ${
+                    className={`w-1.5 h-1.5 rounded-full ${
                       isConnected ? "bg-green-500 animate-pulse" : "bg-red-500"
                     }`}
                   />
-                  <p className="text-sm font-mono text-cyan-400">{connectionStatus}</p>
+                  <p className="text-xs font-mono text-[#c5a880] uppercase">{connectionStatus}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-xs text-slate-400">Last Update</p>
-                <p className="text-sm font-mono text-cyan-400">{lastUpdate.toLocaleTimeString()}</p>
+                <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider">Last Packet Sync</p>
+                <p className="text-xs font-mono text-[#c5a880] mt-0.5">{lastUpdate.toLocaleTimeString()}</p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="border-slate-600 text-slate-300 hover:bg-slate-700 gap-2"
+                className="border-[#c5a880]/30 hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[10px] uppercase px-4 h-8"
                 onClick={() => setIsLive(!isLive)}
               >
                 {isLive ? (
                   <>
-                    <Pause className="w-4 h-4" />
+                    <Pause className="w-3 h-3 mr-1.5" />
                     Pause
                   </>
                 ) : (
                   <>
-                    <Play className="w-4 h-4" />
+                    <Play className="w-3 h-3 mr-1.5" />
                     Resume
                   </>
                 )}
@@ -201,48 +199,53 @@ export default function RealtimeUpdates() {
         </div>
 
         {/* Live Status Indicator */}
-        <div className="mb-8 flex items-center gap-2">
-          <div className={`w-3 h-3 rounded-full ${isLive ? "bg-emerald-500 animate-pulse" : "bg-slate-500"}`} />
-          <span className="text-sm text-slate-300">
-            {isLive ? "Live Updates Active" : "Updates Paused"} • Refresh every {updateInterval / 1000}s
+        <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-muted-foreground border-b border-[#c5a880]/10 pb-4">
+          <div className={`w-2 h-2 rounded-none ${isLive ? "bg-green-500 animate-pulse" : "bg-slate-500"}`} />
+          <span>
+            {isLive ? "Live Stream Active" : "Telemetry Paused"} • Poll sync interval: {updateInterval / 1000}s
           </span>
         </div>
 
         {/* Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Active Attacks */}
-          <Card className="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-red-400" />
-                Active Attacks
-              </h2>
+          <Card className="lg:col-span-2 glass-card rounded-none">
+            <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+              <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-[#e05a5a]" />
+                Ingress Threat Vector Stream
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
               <div className="space-y-3">
                 {attacks.map((attack) => (
                   <div
                     key={attack.id}
-                    className="p-4 bg-slate-700/50 rounded border border-slate-600 hover:border-red-500/50 transition-colors"
+                    className="p-4 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none hover:border-[#c5a880]/30 transition-all duration-300"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <p className="font-medium text-white">{attack.targetUrl}</p>
-                        <p className="text-xs text-slate-400">{attack.sourceIp}</p>
+                        <p className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0]">{attack.targetUrl}</p>
+                        <p className="text-[10px] font-mono text-muted-foreground mt-0.5">{attack.sourceIp}</p>
                       </div>
                       <div className="text-right">
                         <Badge className={getSeverityColor(attack.severity)}>{attack.severity}</Badge>
-                        <p className="text-xs text-slate-400 mt-1">{attack.timestamp}</p>
+                        <p className="text-[9px] font-mono text-muted-foreground mt-1.5 flex items-center gap-1 justify-end">
+                          <Clock className="w-2.5 h-2.5" />
+                          {attack.timestamp}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Badge className="bg-slate-600 text-slate-200">{attack.type}</Badge>
-                        <span className="text-sm font-mono text-cyan-400">{attack.traffic}</span>
+                        <Badge className="bg-[#1b1e24] text-muted-foreground border border-border rounded-none font-mono text-[8px] uppercase">{attack.type}</Badge>
+                        <span className="text-xs font-mono text-[#c5a880]">{attack.traffic}</span>
                       </div>
                       <Badge
                         className={
                           attack.status === "ongoing"
-                            ? "bg-red-500/20 text-red-300 border-red-500/50 animate-pulse"
-                            : "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
+                            ? "border-[#e05a5a]/30 text-[#e05a5a] bg-[#e05a5a]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5 animate-pulse"
+                            : "border-[#8a9a86]/30 text-[#8a9a86] bg-[#8a9a86]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5"
                         }
                       >
                         {attack.status}
@@ -251,84 +254,93 @@ export default function RealtimeUpdates() {
                   </div>
                 ))}
               </div>
-            </div>
+            </CardContent>
           </Card>
 
           {/* Metrics Summary */}
-          <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-cyan-400" />
-                Current Metrics
-              </h2>
+          <Card className="glass-card rounded-none">
+            <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+              <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                Live Core Diagnostics
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
               <div className="space-y-4">
-                <div className="p-3 bg-slate-700/50 rounded border border-slate-600">
-                  <p className="text-xs text-slate-400">Peak Traffic</p>
-                  <p className="text-2xl font-bold text-cyan-400">2.8 Gbps</p>
+                <div className="p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase">Ingress Peak Traffic</p>
+                  <p className="text-xl font-bold font-serif text-[#c5a880] mt-0.5">2.8 Gbps</p>
                 </div>
-                <div className="p-3 bg-slate-700/50 rounded border border-slate-600">
-                  <p className="text-xs text-slate-400">Requests/sec</p>
-                  <p className="text-2xl font-bold text-cyan-400">95K</p>
+                <div className="p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase">Request Ingress Rate</p>
+                  <p className="text-xl font-bold font-serif text-[#c5a880] mt-0.5">95K req/s</p>
                 </div>
-                <div className="p-3 bg-slate-700/50 rounded border border-slate-600">
-                  <p className="text-xs text-slate-400">Active Alerts</p>
-                  <p className="text-2xl font-bold text-red-400">9</p>
+                <div className="p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase">Ongoing Incident Queue</p>
+                  <p className="text-xl font-bold font-serif text-[#e05a5a] mt-0.5">9 Active</p>
                 </div>
-                <div className="p-3 bg-slate-700/50 rounded border border-slate-600">
-                  <p className="text-xs text-slate-400">Mitigation Rate</p>
-                  <p className="text-2xl font-bold text-emerald-400">94%</p>
+                <div className="p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase">Automatic Scrub Rate</p>
+                  <p className="text-xl font-bold font-serif text-[#8a9a86] mt-0.5">94.00%</p>
                 </div>
               </div>
-            </div>
+            </CardContent>
           </Card>
         </div>
 
         {/* Real-Time Alerts Feed */}
-        <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 mb-8">
-          <div className="p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Zap className="w-5 h-5 text-yellow-400" />
-              Alert Stream
-            </h2>
+        <Card className="glass-card rounded-none">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase flex items-center gap-2">
+              <Zap className="w-4 h-4 text-[#d9c06c]" />
+              Threat Anomaly Stream
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {alerts.map((alert) => (
                 <div
                   key={alert.id}
-                  className="flex items-start gap-3 p-3 bg-slate-700/50 rounded border border-slate-600 hover:border-slate-500 transition-colors"
+                  className="flex items-start gap-3 p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none hover:border-[#c5a880]/30 transition-all duration-300"
                 >
-                  <div className={`mt-1 ${getSeverityColor(alert.severity)}`}>
+                  <div className={`mt-0.5 ${getSeverityColor(alert.severity)}`}>
                     {getTypeIcon(alert.type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white">{alert.message}</p>
-                    <p className="text-xs text-slate-400 mt-1">{alert.timestamp}</p>
+                    <p className="text-xs font-mono text-[#e2e8f0]">{alert.message}</p>
+                    <p className="text-[9px] font-mono text-muted-foreground mt-1 flex items-center gap-1">
+                      <Clock className="w-2.5 h-2.5" />
+                      {alert.timestamp}
+                    </p>
                   </div>
                   <Badge className={getSeverityColor(alert.severity)}>{alert.severity}</Badge>
                 </div>
               ))}
             </div>
-          </div>
+          </CardContent>
         </Card>
 
         {/* Traffic Timeline */}
-        <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
-          <div className="p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Traffic Timeline (Last 8 Minutes)</h2>
-            <div className="flex items-end justify-between gap-2 h-40">
+        <Card className="glass-card rounded-none">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Scrub Volume Timeline (Last 8 Minutes)</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="flex items-end justify-between gap-3 h-40 pt-4 border-b border-[#c5a880]/10 pb-1">
               {metrics.map((metric, idx) => (
                 <div key={idx} className="flex-1 flex flex-col items-center gap-2">
                   <div
-                    className="w-full bg-gradient-to-t from-cyan-500 to-blue-600 rounded-t transition-all hover:from-cyan-400 hover:to-blue-500"
+                    className="w-full bg-[#c5a880]/20 border-t-2 border-[#c5a880] transition-all hover:bg-[#c5a880]/35"
                     style={{ height: `${(metric.traffic / 3000) * 100}%` }}
                     title={`${metric.traffic} Mbps`}
                   />
-                  <p className="text-xs text-slate-400">{metric.timestamp}</p>
+                  <p className="text-[9px] font-mono text-muted-foreground">{metric.timestamp}</p>
                 </div>
               ))}
             </div>
-          </div>
+          </CardContent>
         </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

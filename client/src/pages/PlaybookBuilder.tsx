@@ -9,6 +9,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Plus, Play, Trash2, BookOpen } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export function PlaybookBuilder() {
   const [organizationId] = useState(1);
@@ -88,144 +89,150 @@ export function PlaybookBuilder() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Attack Playbook Builder</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Create automated response playbooks for security events
-          </p>
-        </div>
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Playbook
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Create New Playbook</DialogTitle>
-              <DialogDescription>
-                Define triggers and actions for automated attack response
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label>Playbook Name</Label>
-                <Input
-                  placeholder="e.g., DDoS Response"
-                  value={playbookName}
-                  onChange={(e) => setPlaybookName(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Trigger Event</Label>
-                <Select value={triggerType} onValueChange={setTriggerType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {triggerTypes.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Response Actions</Label>
-                <div className="space-y-2 mt-2">
-                  {actionTypes.map((action) => (
-                    <div key={action.value} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id={action.value}
-                        checked={selectedActions.includes(action.value)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedActions([...selectedActions, action.value]);
-                          } else {
-                            setSelectedActions(selectedActions.filter((a) => a !== action.value));
-                          }
-                        }}
-                      />
-                      <label htmlFor={action.value} className="text-sm cursor-pointer">
-                        {action.label}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <Button onClick={handleCreate} disabled={createMutation.isPending} className="w-full">
-                {createMutation.isPending ? <Spinner /> : "Create Playbook"}
-              </Button>
+    <DashboardLayout>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="animate-fade-in-up border-l-2 border-[#c5a880] pl-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-serif text-[#c5a880] uppercase tracking-wider mb-1">Playbook Builder</h1>
+              <p className="text-xs text-muted-foreground font-mono">Build customized automated orchestration response playbooks</p>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+            <Dialog open={showDialog} onOpenChange={setShowDialog}>
+              <DialogTrigger asChild>
+                <Button className="bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none px-5 h-10">
+                  <Plus className="w-4 h-4 mr-1.5" />
+                  Create Playbook
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#13151a] border-[#c5a880]/20 rounded-none max-w-md">
+                <DialogHeader className="border-b border-[#c5a880]/10 pb-4">
+                  <DialogTitle className="font-serif text-[#c5a880] uppercase tracking-wider text-sm">Create Playbook Blueprint</DialogTitle>
+                  <DialogDescription className="text-[10px] font-mono text-muted-foreground uppercase mt-1">
+                    Define triggers and actions for automated response
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 pt-4">
+                  <div>
+                    <Label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">Playbook Name</Label>
+                    <Input
+                      placeholder="e.g., DDoS Volumetric Response"
+                      value={playbookName}
+                      onChange={(e) => setPlaybookName(e.target.value)}
+                      className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs focus-visible:ring-1 focus-visible:ring-[#c5a880]"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">Trigger Event</Label>
+                    <Select value={triggerType} onValueChange={setTriggerType}>
+                      <SelectTrigger className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 text-xs font-mono">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-none bg-[#13151a] border-[#c5a880]/15 font-mono text-xs">
+                        {triggerTypes.map((t) => (
+                          <SelectItem key={t.value} value={t.value}>
+                            {t.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2 block">Response Actions</Label>
+                    <div className="space-y-2 max-h-40 overflow-y-auto border border-[#c5a880]/10 p-2.5 bg-[#13151a]/30">
+                      {actionTypes.map((action) => (
+                        <div key={action.value} className="flex items-center gap-2 font-mono text-xs">
+                          <input
+                            type="checkbox"
+                            id={action.value}
+                            checked={selectedActions.includes(action.value)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedActions([...selectedActions, action.value]);
+                              } else {
+                                setSelectedActions(selectedActions.filter((a) => a !== action.value));
+                              }
+                            }}
+                            className="w-4 h-4 accent-[#c5a880] border-[#c5a880]/30 rounded-none bg-[#13151a]"
+                          />
+                          <label htmlFor={action.value} className="cursor-pointer text-muted-foreground hover:text-[#e2e8f0]">
+                            {action.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <Button onClick={handleCreate} disabled={createMutation.isPending} className="w-full bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none mt-2">
+                    {createMutation.isPending ? <Spinner /> : "Create Playbook"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center py-8">
-          <Spinner />
-        </div>
-      ) : !playbooks || playbooks.length === 0 ? (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <AlertCircle className="w-4 h-4" />
-              <p>No playbooks created yet. Create one to automate attack response.</p>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4">
-          {playbooks.map((playbook) => (
-            <Card key={playbook.playbookId}>
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <BookOpen className="w-4 h-4" />
-                      {playbook.name}
-                    </CardTitle>
-                    <CardDescription className="text-xs mt-1">
-                      ID: {playbook.playbookId}
-                    </CardDescription>
-                  </div>
-                  <Badge variant={playbook.isActive ? "default" : "secondary"}>
-                    {playbook.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 text-sm">
-                  {playbook.description && (
-                    <div>
-                      <p className="text-muted-foreground">Description</p>
-                      <p>{playbook.description}</p>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <Spinner />
+          </div>
+        ) : !playbooks || playbooks.length === 0 ? (
+          <Card className="glass-card rounded-none border-[#c5a880]/15">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 text-muted-foreground font-mono text-xs">
+                <AlertCircle className="w-4 h-4 text-[#c5a880]" />
+                <p>No playbooks created yet. Create one to automate response.</p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4">
+            {playbooks.map((playbook) => (
+              <Card key={playbook.playbookId} className="glass-card rounded-none border-[#c5a880]/15">
+                <CardHeader className="border-b border-[#c5a880]/10 pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-sm font-serif uppercase tracking-wider text-[#c5a880] flex items-center gap-2">
+                        <BookOpen className="w-4 h-4" />
+                        {playbook.name}
+                      </CardTitle>
+                      <CardDescription className="text-[10px] font-mono text-muted-foreground mt-1">
+                        Playbook Blueprint Registry Key: {playbook.playbookId}
+                      </CardDescription>
                     </div>
-                  )}
-                  <div className="flex gap-2 pt-2">
-                    <Button
-                      size="sm"
-                      onClick={() => handleExecute(playbook.playbookId)}
-                      disabled={executeMutation.isPending}
-                    >
-                      <Play className="w-3 h-3 mr-1" />
-                      Test Execute
-                    </Button>
-                    <Button size="sm" variant="outline" disabled>
-                      Edit (Coming Soon)
-                    </Button>
+                    <Badge className="border-[#c5a880]/30 text-[#c5a880] bg-[#c5a880]/5 rounded-none font-mono text-[8px] uppercase">
+                      {playbook.isActive ? "Active" : "Inactive"}
+                    </Badge>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+                </CardHeader>
+                <CardContent className="pt-4 font-mono text-xs">
+                  <div className="space-y-3">
+                    {playbook.description && (
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase">Operational Target Description</p>
+                        <p className="text-[#e2e8f0] mt-0.5">{playbook.description}</p>
+                      </div>
+                    )}
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleExecute(playbook.playbookId)}
+                        disabled={executeMutation.isPending}
+                        className="border border-[#c5a880]/35 bg-transparent hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[9px] uppercase h-8 px-4"
+                      >
+                        <Play className="w-3 h-3 mr-1" />
+                        Test Execute
+                      </Button>
+                      <Button size="sm" className="border border-[#c5a880]/10 bg-transparent text-muted-foreground rounded-none font-mono text-[9px] uppercase h-8 px-4 opacity-50 cursor-not-allowed" disabled>
+                        Edit (Coming Soon)
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
   );
 }

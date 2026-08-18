@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, Wrench } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useToast } from "@/hooks/useToast";
+import DashboardLayout from "@/components/DashboardLayout";
+import { Spinner } from "@/components/ui/spinner";
 
 const RULE_TEMPLATES: Array<{
   name: string;
@@ -99,7 +101,7 @@ export default function AlertRulesBuilder() {
   const handleRemoveCondition = (index: number) => {
     setNewRule({
       ...newRule,
-      conditions: newRule.conditions.filter((_, i) => i !== index),
+      conditions: newRule.conditions.filter((_, idx) => idx !== index),
     });
   };
 
@@ -113,23 +115,13 @@ export default function AlertRulesBuilder() {
   const handleRemoveAction = (index: number) => {
     setNewRule({
       ...newRule,
-      actions: newRule.actions.filter((_, i) => i !== index),
+      actions: newRule.actions.filter((_, idx) => idx !== index),
     });
   };
 
   const handleSaveRule = () => {
-    if (!newRule.name.trim()) {
-      error("Rule name is required");
-      return;
-    }
-
-    if (newRule.conditions.length === 0) {
-      error("At least one condition is required");
-      return;
-    }
-
-    if (newRule.actions.length === 0) {
-      error("At least one action is required");
+    if (!newRule.name) {
+      error("Please enter a rule name");
       return;
     }
 
@@ -161,251 +153,271 @@ export default function AlertRulesBuilder() {
   };
 
   if (isLoading) {
-    return <div className="p-6">Loading rules...</div>;
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <Spinner />
+        </div>
+      </DashboardLayout>
+    );
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-            Alert Rules Builder
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Create custom alert rules with visual rule builder
-          </p>
+    <DashboardLayout>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="animate-fade-in-up border-l-2 border-[#c5a880] pl-4">
+          <h1 className="text-3xl font-serif text-[#c5a880] uppercase tracking-wider mb-1">Alert Rules Builder</h1>
+          <p className="text-xs text-muted-foreground font-mono">Create and deploy customized response conditions on active metrics</p>
         </div>
-      </div>
 
-      {/* Templates Section */}
-      <Card className="p-6 border-blue-200 dark:border-blue-900 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950">
-        <h2 className="text-lg font-semibold mb-4 text-blue-900 dark:text-blue-100">Rule Templates</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {RULE_TEMPLATES.map((template, idx) => (
-            <Card key={idx} className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
-              <h3 className="font-semibold text-sm mb-2">{template.name}</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{template.description}</p>
+        {/* Templates Section */}
+        <Card className="glass-card rounded-none border-[#c5a880]/15">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase flex items-center gap-2">
+              <Wrench className="w-4 h-4" />
+              Standard Preset Templates
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {RULE_TEMPLATES.map((template, idx) => (
+                <div key={idx} className="p-4 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none hover:border-[#c5a880]/30 transition-all duration-300">
+                  <h3 className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0] mb-2">{template.name}</h3>
+                  <p className="text-[10px] text-muted-foreground font-mono mb-4 min-h-[30px]">{template.description}</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleApplyTemplate(template)}
+                    className="w-full border-[#c5a880]/30 hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[9px] uppercase h-8"
+                  >
+                    Use Template
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Rule Builder */}
+        <Card className="glass-card rounded-none border-[#c5a880]/15">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Rule Builder Panel</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            {/* Basic Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Rule Identification Name</label>
+                <Input
+                  placeholder="e.g., High Traffic Alert"
+                  value={newRule.name}
+                  onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
+                  className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs focus-visible:ring-1 focus-visible:ring-[#c5a880]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Operational Description</label>
+                <Input
+                  placeholder="Describe rule behavior parameters"
+                  value={newRule.description}
+                  onChange={(e) => setNewRule({ ...newRule, description: e.target.value })}
+                  className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs focus-visible:ring-1 focus-visible:ring-[#c5a880]"
+                />
+              </div>
+            </div>
+
+            {/* Conditions */}
+            <div className="border-t border-[#c5a880]/10 pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-serif text-xs uppercase tracking-wider text-[#c5a880]">Matching Conditions</h3>
+                <Select value={newRule.logicalOperator} onValueChange={(val: any) => setNewRule({ ...newRule, logicalOperator: val })}>
+                  <SelectTrigger className="w-24 rounded-none bg-[#13151a]/20 border-[#c5a880]/15 text-[10px] font-mono">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-none bg-[#13151a] border-[#c5a880]/15 font-mono text-xs">
+                    <SelectItem value="AND">AND</SelectItem>
+                    <SelectItem value="OR">OR</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-3">
+                {newRule.conditions.map((cond, idx) => (
+                  <div key={idx} className="flex gap-3 items-end">
+                    <Select value={cond.field} onValueChange={(val) => {
+                      const updated = [...newRule.conditions];
+                      updated[idx].field = val;
+                      setNewRule({ ...newRule, conditions: updated });
+                    }}>
+                      <SelectTrigger className="flex-1 rounded-none bg-[#13151a]/20 border-[#c5a880]/15 text-[10px] font-mono">
+                        <SelectValue placeholder="Select field" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-none bg-[#13151a] border-[#c5a880]/15 font-mono text-xs">
+                        <SelectItem value="severity">Severity</SelectItem>
+                        <SelectItem value="type">Attack Type</SelectItem>
+                        <SelectItem value="trafficVolume">Traffic Volume</SelectItem>
+                        <SelectItem value="sourceCountry">Source Country</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={cond.operator} onValueChange={(val: any) => {
+                      const updated = [...newRule.conditions];
+                      updated[idx].operator = val as "equals" | "greater_than" | "less_than" | "contains" | "in";
+                      setNewRule({ ...newRule, conditions: updated });
+                    }}>
+                      <SelectTrigger className="w-32 rounded-none bg-[#13151a]/20 border-[#c5a880]/15 text-[10px] font-mono">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-none bg-[#13151a] border-[#c5a880]/15 font-mono text-xs">
+                        <SelectItem value="equals">Equals</SelectItem>
+                        <SelectItem value="greater_than">Greater Than</SelectItem>
+                        <SelectItem value="less_than">Less Than</SelectItem>
+                        <SelectItem value="contains">Contains</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Input
+                      placeholder="Value"
+                      value={cond.value}
+                      onChange={(e) => {
+                        const updated = [...newRule.conditions];
+                        updated[idx].value = e.target.value;
+                        setNewRule({ ...newRule, conditions: updated });
+                      }}
+                      className="flex-1 rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs focus-visible:ring-1 focus-visible:ring-[#c5a880]"
+                    />
+
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleRemoveCondition(idx)}
+                      className="text-[#e05a5a] hover:bg-[#e05a5a]/5 rounded-none"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => handleApplyTemplate(template)}
-                className="w-full"
+                onClick={handleAddCondition}
+                className="mt-3 border-[#c5a880]/30 hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[9px] uppercase h-8"
               >
-                Use Template
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                Add Condition
               </Button>
-            </Card>
-          ))}
-        </div>
-      </Card>
-
-      {/* Rule Builder */}
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-6">Create New Rule</h2>
-
-        <div className="space-y-6">
-          {/* Basic Info */}
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Rule Name</label>
-              <Input
-                placeholder="e.g., High Traffic Alert"
-                value={newRule.name}
-                onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
-              />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Description</label>
-              <Input
-                placeholder="Describe what this rule does"
-                value={newRule.description}
-                onChange={(e) => setNewRule({ ...newRule, description: e.target.value })}
-              />
-            </div>
-          </div>
+            {/* Actions */}
+            <div className="border-t border-[#c5a880]/10 pt-6">
+              <h3 className="font-serif text-xs uppercase tracking-wider text-[#c5a880] mb-4">Targeted Alert Actions</h3>
 
-          {/* Conditions */}
-          <div className="border-t pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Conditions</h3>
-              <Select value={newRule.logicalOperator} onValueChange={(val: any) => setNewRule({ ...newRule, logicalOperator: val })}>
-                <SelectTrigger className="w-24">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="AND">AND</SelectItem>
-                  <SelectItem value="OR">OR</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-3">
-              {newRule.conditions.map((cond, idx) => (
-                <div key={idx} className="flex gap-2 items-end">
-                  <Select value={cond.field} onValueChange={(val) => {
-                    const updated = [...newRule.conditions];
-                    updated[idx].field = val;
-                    setNewRule({ ...newRule, conditions: updated });
-                  }}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Select field" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="severity">Severity</SelectItem>
-                      <SelectItem value="type">Attack Type</SelectItem>
-                      <SelectItem value="trafficVolume">Traffic Volume</SelectItem>
-                      <SelectItem value="sourceCountry">Source Country</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={cond.operator} onValueChange={(val: any) => {
-                    const updated = [...newRule.conditions];
-                    updated[idx].operator = val as "equals" | "greater_than" | "less_than" | "contains" | "in";
-                    setNewRule({ ...newRule, conditions: updated });
-                  }}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="equals">Equals</SelectItem>
-                      <SelectItem value="greater_than">Greater Than</SelectItem>
-                      <SelectItem value="less_than">Less Than</SelectItem>
-                      <SelectItem value="contains">Contains</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Input
-                    placeholder="Value"
-                    value={cond.value}
-                    onChange={(e) => {
-                      const updated = [...newRule.conditions];
-                      updated[idx].value = e.target.value;
-                      setNewRule({ ...newRule, conditions: updated });
-                    }}
-                    className="flex-1"
-                  />
-
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleRemoveCondition(idx)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleAddCondition}
-              className="mt-3"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Condition
-            </Button>
-          </div>
-
-          {/* Actions */}
-          <div className="border-t pt-6">
-            <h3 className="font-semibold mb-4">Actions</h3>
-
-            <div className="space-y-3">
-              {newRule.actions.map((action, idx) => (
-                <div key={idx} className="flex gap-2 items-end">
-                  <Select value={action.type} onValueChange={(val: any) => {
-                    const updated = [...newRule.actions];
-                    updated[idx].type = val;
-                    setNewRule({ ...newRule, actions: updated });
-                  }}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="email">Email</SelectItem>
-                      <SelectItem value="slack">Slack</SelectItem>
-                      <SelectItem value="webhook">Webhook</SelectItem>
-                      <SelectItem value="sms">SMS</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Input
-                    placeholder="Target (email, webhook URL, etc.)"
-                    value={action.target}
-                    onChange={(e) => {
+              <div className="space-y-3">
+                {newRule.actions.map((action, idx) => (
+                  <div key={idx} className="flex gap-3 items-end">
+                    <Select value={action.type} onValueChange={(val: any) => {
                       const updated = [...newRule.actions];
-                      updated[idx].target = e.target.value;
+                      updated[idx].type = val;
                       setNewRule({ ...newRule, actions: updated });
-                    }}
-                    className="flex-1"
-                  />
+                    }}>
+                      <SelectTrigger className="w-32 rounded-none bg-[#13151a]/20 border-[#c5a880]/15 text-[10px] font-mono">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-none bg-[#13151a] border-[#c5a880]/15 font-mono text-xs">
+                        <SelectItem value="email">Email</SelectItem>
+                        <SelectItem value="slack">Slack</SelectItem>
+                        <SelectItem value="webhook">Webhook</SelectItem>
+                        <SelectItem value="sms">SMS</SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleRemoveAction(idx)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
+                    <Input
+                      placeholder="Target endpoint parameter (email / webhook URL / mobile number)"
+                      value={action.target}
+                      onChange={(e) => {
+                        const updated = [...newRule.actions];
+                        updated[idx].target = e.target.value;
+                        setNewRule({ ...newRule, actions: updated });
+                      }}
+                      className="flex-1 rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs focus-visible:ring-1 focus-visible:ring-[#c5a880]"
+                    />
+
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleRemoveAction(idx)}
+                      className="text-[#e05a5a] hover:bg-[#e05a5a]/5 rounded-none"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleAddAction}
+                className="mt-3 border-[#c5a880]/30 hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[9px] uppercase h-8"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                Add Action
+              </Button>
             </div>
 
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleAddAction}
-              className="mt-3"
+            {/* Save Button */}
+            <Button 
+              onClick={handleSaveRule} 
+              disabled={createRuleMutation.isPending}
+              className="w-full bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none h-10"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Action
+              <Save className="w-4 h-4 mr-2" />
+              {createRuleMutation.isPending ? "Syncing..." : "Commit Rule to Core"}
             </Button>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Save Button */}
-          <Button 
-            onClick={handleSaveRule} 
-            disabled={createRuleMutation.isPending}
-            className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {createRuleMutation.isPending ? "Saving..." : "Save Rule"}
-          </Button>
-        </div>
-      </Card>
-
-      {/* Active Rules */}
-      {rules.length > 0 && (
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Active Rules ({rules.length})</h2>
-          <div className="space-y-3">
-            {rules.map((rule) => (
-              <div key={rule.id} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold">{rule.name}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{rule.description}</p>
-                    <div className="mt-2 flex gap-2">
-                      <Badge variant="outline">{rule.conditions?.length || 0} conditions</Badge>
-                      <Badge variant="outline">{rule.logicalOperator || "AND"}</Badge>
-                      <Badge variant="outline">{rule.actions?.length || 0} actions</Badge>
+        {/* Active Rules */}
+        {rules.length > 0 && (
+          <Card className="glass-card rounded-none border-[#c5a880]/15">
+            <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+              <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Active Ingress Defense Rules ({rules.length})</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="space-y-3">
+                {rules.map((rule) => (
+                  <div key={rule.id} className="p-4 border border-[#c5a880]/10 bg-[#13151a]/30 rounded-none hover:border-[#c5a880]/30 transition-all duration-300">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0]">{rule.name}</h3>
+                        <p className="text-[10px] text-muted-foreground font-mono mt-1">{rule.description}</p>
+                        <div className="mt-3 flex gap-2">
+                          <Badge className="border-[#c5a880]/30 text-[#c5a880] bg-[#c5a880]/5 rounded-none font-mono text-[8px] uppercase">{rule.conditions?.length || 0} conditions</Badge>
+                          <Badge className="border-[#c5a880]/30 text-[#c5a880] bg-[#c5a880]/5 rounded-none font-mono text-[8px] uppercase">{rule.logicalOperator || "AND"}</Badge>
+                          <Badge className="border-[#c5a880]/30 text-[#c5a880] bg-[#c5a880]/5 rounded-none font-mono text-[8px] uppercase">{rule.actions?.length || 0} actions</Badge>
+                        </div>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => handleDeleteRule(rule.id)}
+                        disabled={deleteRuleMutation.isPending}
+                        className="text-[#e05a5a] hover:bg-[#e05a5a]/5 rounded-none"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
                     </div>
                   </div>
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    onClick={() => handleDeleteRule(rule.id)}
-                    disabled={deleteRuleMutation.isPending}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </Card>
-      )}
-    </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </DashboardLayout>
   );
 }

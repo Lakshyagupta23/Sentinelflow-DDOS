@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Building2, Users, Plus, Mail, Shield, Trash2, Settings } from "lucide-react";
+import { Building2, Users, Plus, Mail, Shield, Trash2, Settings, Clock } from "lucide-react";
 import { toast } from "sonner";
+import DashboardLayout from "@/components/DashboardLayout";
 
 const SAMPLE_ORGANIZATIONS = [
   {
@@ -87,29 +88,26 @@ export default function OrganizationsManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-      <div className="max-w-7xl mx-auto">
+    <DashboardLayout>
+      <div className="space-y-8">
         {/* Header */}
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
-            <Building2 className="w-8 h-8 text-cyan-400" />
-            Organizations
-          </h1>
-          <p className="text-slate-400">Manage multi-tenant organizations and team access</p>
+        <div className="animate-fade-in-up border-l-2 border-[#c5a880] pl-4">
+          <h1 className="text-3xl font-serif text-[#c5a880] uppercase tracking-wider mb-1">Organizations Directory</h1>
+          <p className="text-xs text-muted-foreground font-mono">Manage multi-tenant operational security workspaces and team rosters</p>
         </div>
 
-        {/* Create Organization Button */}
-        <div className="mb-8">
+        {/* Action Button */}
+        <div className="animate-fade-in-up">
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white gap-2">
-                <Plus className="w-4 h-4" />
-                Create Organization
+              <Button className="bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none px-5 h-10">
+                <Plus className="w-4 h-4 mr-1.5" />
+                Create New Organization
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-slate-700">
-              <DialogHeader>
-                <DialogTitle className="text-white">Create New Organization</DialogTitle>
+            <DialogContent className="bg-[#13151a] border-[#c5a880]/20 rounded-none max-w-md">
+              <DialogHeader className="border-b border-[#c5a880]/10 pb-4">
+                <DialogTitle className="font-serif text-[#c5a880] uppercase tracking-wider text-sm">Create Organization</DialogTitle>
               </DialogHeader>
               <form
                 onSubmit={(e) => {
@@ -120,26 +118,26 @@ export default function OrganizationsManagement() {
                     formData.get("description") as string
                   );
                 }}
-                className="space-y-4"
+                className="space-y-4 pt-4"
               >
                 <div>
-                  <label className="text-sm font-medium text-slate-300">Organization Name</label>
+                  <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Workspace Name</label>
                   <Input
                     name="name"
-                    placeholder="e.g., TechCorp Security"
-                    className="bg-slate-700 border-slate-600 text-white mt-1"
+                    placeholder="e.g., TechCorp Security Operations"
+                    className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs mt-1 focus-visible:ring-1 focus-visible:ring-[#c5a880]"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-300">Description</label>
+                  <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Operational Focus Description</label>
                   <Textarea
                     name="description"
-                    placeholder="Describe your organization..."
-                    className="bg-slate-700 border-slate-600 text-white mt-1"
+                    placeholder="Describe your organization focus..."
+                    className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs mt-1 focus-visible:ring-1 focus-visible:ring-[#c5a880]"
                   />
                 </div>
-                <Button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600 text-white">
+                <Button type="submit" className="w-full bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none mt-2">
                   Create Organization
                 </Button>
               </form>
@@ -148,11 +146,11 @@ export default function OrganizationsManagement() {
         </div>
 
         {/* Organizations Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {organizations.map((org) => (
             <Card
               key={org.id}
-              className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 hover:border-cyan-500 transition-all duration-300 cursor-pointer group"
+              className="glass-card rounded-none border-[#c5a880]/15 hover:border-[#c5a880]/40 transition-all duration-300 cursor-pointer group"
               onClick={() => {
                 setSelectedOrg(org);
                 setShowMembers(false);
@@ -160,35 +158,36 @@ export default function OrganizationsManagement() {
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="text-4xl">{org.logo}</div>
-                  <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/50">{org.status}</Badge>
+                  <div className="text-3xl filter saturate-50">{org.logo}</div>
+                  <Badge className="border-[#8a9a86]/30 text-[#8a9a86] bg-[#8a9a86]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5">{org.status}</Badge>
                 </div>
 
-                <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors mb-2">
+                <h3 className="font-serif text-sm uppercase tracking-wider text-[#e2e8f0] group-hover:text-[#c5a880] transition-colors mb-2">
                   {org.name}
                 </h3>
-                <p className="text-sm text-slate-400 mb-4">{org.description}</p>
+                <p className="text-[10px] font-mono text-muted-foreground mb-4 min-h-[30px]">{org.description}</p>
 
-                <div className="space-y-2 mb-4 text-sm">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <Shield className="w-4 h-4 text-cyan-400" />
-                    Owner: {org.owner}
+                <div className="space-y-2 mb-6 text-xs border-t border-[#c5a880]/10 pt-3">
+                  <div className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground">
+                    <Shield className="w-3.5 h-3.5 text-[#c5a880]" />
+                    Owner: <span className="text-[#e2e8f0]">{org.owner}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <Users className="w-4 h-4 text-cyan-400" />
-                    {org.members} members
+                  <div className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground">
+                    <Users className="w-3.5 h-3.5 text-[#c5a880]" />
+                    Members: <span className="text-[#e2e8f0]">{org.members}</span>
                   </div>
                 </div>
 
                 <Button
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white gap-2"
-                  onClick={() => {
+                  className="w-full border border-[#c5a880]/30 bg-transparent hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[10px] uppercase h-8 mt-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedOrg(org);
                     setShowMembers(true);
                   }}
                 >
-                  <Users className="w-4 h-4" />
-                  Manage Members
+                  <Users className="w-3.5 h-3.5 mr-1.5" />
+                  Manage Roster
                 </Button>
               </div>
             </Card>
@@ -198,53 +197,53 @@ export default function OrganizationsManagement() {
         {/* Organization Details Modal */}
         {selectedOrg && !showMembers && (
           <Dialog open={!!selectedOrg && !showMembers} onOpenChange={() => setSelectedOrg(null)}>
-            <DialogContent className="bg-slate-800 border-slate-700 max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-white flex items-center gap-2">
-                  <span className="text-2xl">{selectedOrg.logo}</span>
+            <DialogContent className="bg-[#13151a] border-[#c5a880]/20 rounded-none max-w-2xl">
+              <DialogHeader className="border-b border-[#c5a880]/10 pb-4">
+                <DialogTitle className="font-serif text-[#c5a880] uppercase tracking-wider text-sm flex items-center gap-2">
+                  <span className="text-xl">{selectedOrg.logo}</span>
                   {selectedOrg.name}
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 pt-4">
                 <div>
-                  <p className="text-sm text-slate-400 mb-2">Description</p>
-                  <p className="text-white">{selectedOrg.description}</p>
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">Operational Summary</p>
+                  <p className="text-xs font-mono text-[#e2e8f0]">{selectedOrg.description}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-slate-700/50 rounded border border-slate-600">
-                    <p className="text-xs text-slate-400">Owner</p>
-                    <p className="text-white font-medium">{selectedOrg.owner}</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase">Owner</p>
+                    <p className="text-xs font-mono text-[#e2e8f0] mt-0.5">{selectedOrg.owner}</p>
                   </div>
-                  <div className="p-3 bg-slate-700/50 rounded border border-slate-600">
-                    <p className="text-xs text-slate-400">Members</p>
-                    <p className="text-white font-medium">{selectedOrg.members}</p>
+                  <div className="p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase">Members</p>
+                    <p className="text-xs font-mono text-[#e2e8f0] mt-0.5">{selectedOrg.members}</p>
                   </div>
-                  <div className="p-3 bg-slate-700/50 rounded border border-slate-600">
-                    <p className="text-xs text-slate-400">Status</p>
-                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/50 mt-1">
+                  <div className="p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase">Status</p>
+                    <Badge className="border-[#8a9a86]/30 text-[#8a9a86] bg-[#8a9a86]/5 rounded-none font-mono text-[8px] uppercase mt-1">
                       {selectedOrg.status}
                     </Badge>
                   </div>
-                  <div className="p-3 bg-slate-700/50 rounded border border-slate-600">
-                    <p className="text-xs text-slate-400">Created</p>
-                    <p className="text-white font-medium">{selectedOrg.createdAt}</p>
+                  <div className="p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                    <p className="text-[9px] font-mono text-muted-foreground uppercase">Created</p>
+                    <p className="text-xs font-mono text-[#e2e8f0] mt-0.5">{selectedOrg.createdAt}</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-3 mt-4">
                   <Button
-                    className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white gap-2"
+                    className="flex-1 bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none h-10"
                     onClick={() => setShowMembers(true)}
                   >
-                    <Users className="w-4 h-4" />
-                    Manage Members
+                    <Users className="w-4 h-4 mr-1.5" />
+                    Manage Members Roster
                   </Button>
                   <Button
                     variant="outline"
-                    className="border-slate-600 text-slate-300 hover:bg-slate-700 gap-2"
+                    className="border-[#e05a5a]/30 hover:bg-[#e05a5a]/5 text-[#e05a5a] rounded-none font-mono text-[10px] uppercase h-10 px-5 gap-2"
                     onClick={() => handleDeleteOrganization(selectedOrg.id)}
                   >
                     <Trash2 className="w-4 h-4" />
-                    Delete
+                    Decommission
                   </Button>
                 </div>
               </div>
@@ -255,27 +254,27 @@ export default function OrganizationsManagement() {
         {/* Members Management Modal */}
         {selectedOrg && showMembers && (
           <Dialog open={!!selectedOrg && showMembers} onOpenChange={() => setShowMembers(false)}>
-            <DialogContent className="bg-slate-800 border-slate-700 max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-white">Manage Members - {selectedOrg.name}</DialogTitle>
+            <DialogContent className="bg-[#13151a] border-[#c5a880]/20 rounded-none max-w-2xl">
+              <DialogHeader className="border-b border-[#c5a880]/10 pb-4">
+                <DialogTitle className="font-serif text-[#c5a880] uppercase tracking-wider text-sm">Manage Roster - {selectedOrg.name}</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-6 pt-4">
                 {/* Add Member Section */}
-                <div className="p-4 bg-slate-700/50 rounded border border-slate-600">
-                  <p className="text-sm font-medium text-white mb-3">Add Team Member</p>
+                <div className="p-4 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-3">Invite Team Member</p>
                   <div className="flex gap-2">
                     <Input
                       type="email"
-                      placeholder="Enter email address"
+                      placeholder="Enter team member email address"
                       value={newMemberEmail}
                       onChange={(e) => setNewMemberEmail(e.target.value)}
-                      className="bg-slate-600 border-slate-500 text-white flex-1"
+                      className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs flex-1 focus-visible:ring-1 focus-visible:ring-[#c5a880]"
                     />
                     <Button
-                      className="bg-cyan-500 hover:bg-cyan-600 text-white gap-2"
+                      className="bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none px-4"
                       onClick={handleAddMember}
                     >
-                      <Mail className="w-4 h-4" />
+                      <Mail className="w-4 h-4 mr-1.5" />
                       Invite
                     </Button>
                   </div>
@@ -283,27 +282,27 @@ export default function OrganizationsManagement() {
 
                 {/* Members List */}
                 <div>
-                  <p className="text-sm font-medium text-white mb-3">Team Members</p>
-                  <div className="space-y-2">
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-3">Active Operational Roster</p>
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
                     {SAMPLE_MEMBERS.map((member) => (
                       <div
                         key={member.id}
-                        className="flex items-center justify-between p-3 bg-slate-700/50 rounded border border-slate-600"
+                        className="flex items-center justify-between p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none hover:border-[#c5a880]/30 transition-all duration-300"
                       >
                         <div>
-                          <p className="font-medium text-white">{member.name}</p>
-                          <p className="text-xs text-slate-400">{member.email}</p>
+                          <p className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0]">{member.name}</p>
+                          <p className="text-[9px] font-mono text-muted-foreground mt-0.5">{member.email}</p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/50">
+                          <Badge className="border-[#c5a880]/35 text-[#c5a880] bg-[#c5a880]/5 rounded-none font-mono text-[8px] uppercase">
                             {member.role}
                           </Badge>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                            className="text-[#e05a5a] hover:bg-[#e05a5a]/5 rounded-none"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </div>
                       </div>
@@ -315,6 +314,6 @@ export default function OrganizationsManagement() {
           </Dialog>
         )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

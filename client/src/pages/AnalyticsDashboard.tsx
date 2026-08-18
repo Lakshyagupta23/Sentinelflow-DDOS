@@ -3,7 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Download, TrendingUp, TrendingDown } from "lucide-react";
+import { Download, TrendingUp, TrendingDown, Clock, Shield, BarChart3, AlertCircle } from "lucide-react";
+import DashboardLayout from "@/components/DashboardLayout";
+import { Badge } from "@/components/ui/badge";
 
 type TimeRange = "7d" | "30d" | "90d" | "1y";
 
@@ -36,7 +38,7 @@ export default function AnalyticsDashboard() {
     { name: "Geo Blocking", effectiveness: 85 },
   ];
 
-  const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6"];
+  const COLORS = ["#c5a880", "#b09670", "#9c845f", "#87724f", "#736040"];
 
   const handleExportJSON = () => {
     const data = { timeRange, timestamp: new Date().toISOString(), metrics: { timeSeriesData, attackTypeData } };
@@ -62,224 +64,212 @@ export default function AnalyticsDashboard() {
   };
 
   return (
-    <div className="space-y-8 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-          <p className="text-muted-foreground mt-1">DDoS attack trends, mitigation effectiveness, and ROI analysis</p>
+    <DashboardLayout>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="animate-fade-in-up border-l-2 border-[#c5a880] pl-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-serif text-[#c5a880] uppercase tracking-wider mb-1">Metrics Analytics</h1>
+              <p className="text-xs text-muted-foreground font-mono">DDoS attack trends, mitigation effectiveness, and operations analysis</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
+                <SelectTrigger className="w-32 rounded-none bg-[#13151a]/25 border-[#c5a880]/15 text-xs font-mono h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-none bg-[#13151a] border-[#c5a880]/15 font-mono text-xs">
+                  <SelectItem value="7d">7 Days Presets</SelectItem>
+                  <SelectItem value="30d">30 Days Presets</SelectItem>
+                  <SelectItem value="90d">90 Days Presets</SelectItem>
+                  <SelectItem value="1y">1 Year Presets</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button onClick={handleExportJSON} variant="outline" size="sm" className="border-[#c5a880]/30 hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[10px] uppercase h-8 px-3">
+                <Download className="w-3.5 h-3.5 mr-1" />
+                JSON
+              </Button>
+              <Button onClick={handleExportCSV} variant="outline" size="sm" className="border-[#c5a880]/30 hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[10px] uppercase h-8 px-3">
+                <Download className="w-3.5 h-3.5 mr-1" />
+                CSV
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
-              <SelectItem value="1y">Last year</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button onClick={handleExportJSON} variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            JSON
-          </Button>
-          <Button onClick={handleExportCSV} variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            CSV
-          </Button>
-        </div>
-      </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Attacks</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">328</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              <span className="text-red-500 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" /> +12% vs last period
-              </span>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up">
+          <Card className="glass-card rounded-none border-[#c5a880]/15 bg-[#13151a]/30 p-4">
+            <p className="text-[9px] font-mono text-muted-foreground uppercase">Aggregated Threats</p>
+            <div className="text-xl font-bold font-serif text-[#c5a880] mt-1">328 Incidents</div>
+            <p className="text-[9px] font-mono text-muted-foreground mt-1 flex items-center gap-1">
+              <span className="text-[#e05a5a] flex items-center gap-0.5">
+                <TrendingUp className="w-2.5 h-2.5" /> +12.00%
+              </span>{" "}
+              vs baseline period
             </p>
-          </CardContent>
-        </Card>
+          </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Mitigated Attacks</CardTitle>
+          <Card className="glass-card rounded-none border-[#c5a880]/15 bg-[#13151a]/30 p-4">
+            <p className="text-[9px] font-mono text-muted-foreground uppercase">Mitigated Incidents</p>
+            <div className="text-xl font-bold font-serif text-[#c5a880] mt-1">308 Incidents</div>
+            <p className="text-[9px] font-mono text-[#8a9a86] mt-1">93.90% operational rate</p>
+          </Card>
+
+          <Card className="glass-card rounded-none border-[#c5a880]/15 bg-[#13151a]/30 p-4">
+            <p className="text-[9px] font-mono text-muted-foreground uppercase">Mean Mitigation Time</p>
+            <div className="text-xl font-bold font-serif text-[#c5a880] mt-1">245 ms</div>
+            <p className="text-[9px] font-mono text-muted-foreground mt-1">First-alert response latency</p>
+          </Card>
+
+          <Card className="glass-card rounded-none border-[#c5a880]/15 bg-[#13151a]/30 p-4">
+            <p className="text-[9px] font-mono text-muted-foreground uppercase">Operational Value Saved</p>
+            <div className="text-xl font-bold font-serif text-[#8a9a86] mt-1">$487,500</div>
+            <p className="text-[9px] font-mono text-muted-foreground mt-1">Critical downtime prevented</p>
+          </Card>
+        </div>
+
+        {/* Time Series Chart */}
+        <Card className="glass-card rounded-none border-[#c5a880]/15">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Attack Volume Timeline</CardTitle>
+            <CardDescription className="text-[10px] font-mono text-muted-foreground uppercase">Daily DDoS attack vectors detected and processed</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">308</div>
-            <p className="text-xs text-muted-foreground mt-1">93.9% success rate</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg Response Time</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">245ms</div>
-            <p className="text-xs text-muted-foreground mt-1">Time to mitigation</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Cost Saved</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$487,500</div>
-            <p className="text-xs text-muted-foreground mt-1">Downtime prevention</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Time Series Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Attack Volume Over Time</CardTitle>
-          <CardDescription>Daily DDoS attack detection and mitigation</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={timeSeriesData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="attacks" stroke="#3b82f6" name="Detected Attacks" strokeWidth={2} />
-              <Line type="monotone" dataKey="mitigated" stroke="#10b981" name="Mitigated" strokeWidth={2} />
-              <Line type="monotone" dataKey="blocked" stroke="#ef4444" name="Blocked" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Attack Type Distribution & Mitigation Effectiveness */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Attack Types Distribution</CardTitle>
-            <CardDescription>Breakdown of detected attack vectors</CardDescription>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6 font-mono text-xs text-[#e2e8f0]">
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={attackTypeData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value }: any) => `${name}: ${value}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {attackTypeData.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
+              <LineChart data={timeSeriesData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#c5a880" strokeOpacity={0.1} />
+                <XAxis dataKey="date" stroke="#c5a880" strokeOpacity={0.5} style={{ fontSize: 10 }} />
+                <YAxis stroke="#c5a880" strokeOpacity={0.5} style={{ fontSize: 10 }} />
+                <Tooltip contentStyle={{ backgroundColor: "#0c0d10", borderColor: "#c5a880" }} />
+                <Legend style={{ fontSize: 10 }} />
+                <Line type="monotone" dataKey="attacks" stroke="#c5a880" name="Detected" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="mitigated" stroke="#8a9a86" name="Mitigated" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="blocked" stroke="#e05a5a" name="Blocked" strokeWidth={2} dot={false} />
+              </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Mitigation Effectiveness</CardTitle>
-            <CardDescription>Success rate by mitigation type</CardDescription>
+        {/* Attack Type Distribution & Mitigation Effectiveness */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="glass-card rounded-none border-[#c5a880]/15">
+            <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+              <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Attack Type Allocation</CardTitle>
+              <CardDescription className="text-[10px] font-mono text-muted-foreground uppercase">Percentage breakdown of attack category metrics</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6 font-mono text-xs text-[#e2e8f0]">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={attackTypeData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }: any) => `${name}: ${value}%`}
+                    outerRadius={80}
+                    fill="#c5a880"
+                    dataKey="value"
+                  >
+                    {attackTypeData.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="#0d0e12" strokeWidth={1} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ backgroundColor: "#0c0d10", borderColor: "#c5a880" }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card rounded-none border-[#c5a880]/15">
+            <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+              <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Scrubbing Effectiveness</CardTitle>
+              <CardDescription className="text-[10px] font-mono text-muted-foreground uppercase">Mitigation sequence containment rate</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6 font-mono text-xs text-[#e2e8f0]">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={mitigationData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#c5a880" strokeOpacity={0.1} />
+                  <XAxis dataKey="name" stroke="#c5a880" strokeOpacity={0.5} style={{ fontSize: 10 }} />
+                  <YAxis stroke="#c5a880" strokeOpacity={0.5} style={{ fontSize: 10 }} />
+                  <Tooltip contentStyle={{ backgroundColor: "#0c0d10", borderColor: "#c5a880" }} />
+                  <Bar dataKey="effectiveness" fill="#c5a880" opacity={0.85} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ROI Analysis */}
+        <Card className="glass-card rounded-none border-[#c5a880]/15">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Return on Investment (ROI) Metrics</CardTitle>
+            <CardDescription className="text-[10px] font-mono text-muted-foreground uppercase">Financial and uptime prevention index analysis</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={mitigationData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="effectiveness" fill="#3b82f6" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                <p className="text-[9px] font-mono text-muted-foreground uppercase">Total Ingress Protection Cost</p>
+                <p className="text-lg font-bold font-serif text-[#e2e8f0] mt-1">$125,000</p>
+              </div>
+              <div className="p-4 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                <p className="text-[9px] font-mono text-muted-foreground uppercase">Uptime Outages Blocked</p>
+                <p className="text-lg font-bold font-serif text-[#e2e8f0] mt-1">156 hours</p>
+              </div>
+              <div className="p-4 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                <p className="text-[9px] font-mono text-muted-foreground uppercase">Revenue Safeguarded</p>
+                <p className="text-lg font-bold font-serif text-[#e2e8f0] mt-1">$612,500</p>
+              </div>
+              <div className="p-4 bg-[#13151a]/30 border border-[#8a9a86]/30 bg-[#8a9a86]/5 rounded-none">
+                <p className="text-[9px] font-mono text-[#8a9a86] uppercase">Aggregate ROI Index</p>
+                <p className="text-lg font-bold font-serif text-[#8a9a86] mt-1">390%</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Detailed Metrics Table */}
+        <Card className="glass-card rounded-none border-[#c5a880]/15">
+          <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+            <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase">Operational Diagnostics Details</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm font-mono text-xs">
+                <thead>
+                  <tr className="border-b border-[#c5a880]/15 text-[10px] font-mono text-muted-foreground uppercase">
+                    <th className="text-left py-2 px-4 font-normal">Metric Identification</th>
+                    <th className="text-left py-2 px-4 font-normal">Value Status</th>
+                    <th className="text-left py-2 px-4 font-normal">Variance Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-[#c5a880]/10 hover:bg-[#c5a880]/5 transition-all">
+                    <td className="py-3 px-4 text-[#e2e8f0]">Peak Volumetric Attack Size</td>
+                    <td className="py-3 px-4 text-[#c5a880]">487 Gbps</td>
+                    <td className="py-3 px-4 text-[#e05a5a]">+15.00%</td>
+                  </tr>
+                  <tr className="border-b border-[#c5a880]/10 hover:bg-[#c5a880]/5 transition-all">
+                    <td className="py-3 px-4 text-[#e2e8f0]">Mean Ingress Attack Duration</td>
+                    <td className="py-3 px-4 text-[#c5a880]">18.5 min</td>
+                    <td className="py-3 px-4 text-[#8a9a86]">-8.00%</td>
+                  </tr>
+                  <tr className="border-b border-[#c5a880]/10 hover:bg-[#c5a880]/5 transition-all">
+                    <td className="py-3 px-4 text-[#e2e8f0]">Defense False Positive Rate</td>
+                    <td className="py-3 px-4 text-[#c5a880]">0.8%</td>
+                    <td className="py-3 px-4 text-[#8a9a86]">-2.00%</td>
+                  </tr>
+                  <tr className="hover:bg-[#c5a880]/5 transition-all">
+                    <td className="py-3 px-4 text-[#e2e8f0]">Unique Attack Vectors Registered</td>
+                    <td className="py-3 px-4 text-[#c5a880]">2,847</td>
+                    <td className="py-3 px-4 text-[#e05a5a]">+25.00%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* ROI Analysis */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Return on Investment (ROI)</CardTitle>
-          <CardDescription>Cost-benefit analysis of DDoS mitigation</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="border rounded-lg p-4">
-              <p className="text-sm text-muted-foreground">Total Investment</p>
-              <p className="text-2xl font-bold">$125,000</p>
-            </div>
-            <div className="border rounded-lg p-4">
-              <p className="text-sm text-muted-foreground">Downtime Prevented</p>
-              <p className="text-2xl font-bold">156h</p>
-            </div>
-            <div className="border rounded-lg p-4">
-              <p className="text-sm text-muted-foreground">Revenue Protected</p>
-              <p className="text-2xl font-bold">$612,500</p>
-            </div>
-            <div className="border rounded-lg p-4 bg-green-50">
-              <p className="text-sm text-muted-foreground">ROI</p>
-              <p className="text-2xl font-bold text-green-600">390%</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Detailed Metrics Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Detailed Metrics</CardTitle>
-          <CardDescription>Comprehensive attack and mitigation statistics</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2 px-4">Metric</th>
-                  <th className="text-left py-2 px-4">Value</th>
-                  <th className="text-left py-2 px-4">Change</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b hover:bg-muted/50">
-                  <td className="py-2 px-4">Peak Attack Size</td>
-                  <td className="py-2 px-4">487 Gbps</td>
-                  <td className="py-2 px-4 text-red-500">+15%</td>
-                </tr>
-                <tr className="border-b hover:bg-muted/50">
-                  <td className="py-2 px-4">Avg Attack Duration</td>
-                  <td className="py-2 px-4">18.5 min</td>
-                  <td className="py-2 px-4 text-green-500">-8%</td>
-                </tr>
-                <tr className="border-b hover:bg-muted/50">
-                  <td className="py-2 px-4">False Positive Rate</td>
-                  <td className="py-2 px-4">0.8%</td>
-                  <td className="py-2 px-4 text-green-500">-2%</td>
-                </tr>
-                <tr className="hover:bg-muted/50">
-                  <td className="py-2 px-4">Unique Attack Sources</td>
-                  <td className="py-2 px-4">2,847</td>
-                  <td className="py-2 px-4 text-red-500">+25%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    </DashboardLayout>
   );
 }

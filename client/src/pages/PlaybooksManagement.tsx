@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Zap, Play, History, Plus, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
+import DashboardLayout from "@/components/DashboardLayout";
 
 const PLAYBOOK_TEMPLATES = [
   {
@@ -34,7 +35,7 @@ const PLAYBOOK_TEMPLATES = [
     ],
   },
   {
-    name: "Application Layer Attack Response",
+    name: "Application Layer Response",
     attackType: "application_layer",
     description: "Automated response for application-layer attacks",
     steps: [
@@ -65,7 +66,7 @@ const EXECUTION_HISTORY = [
   },
   {
     id: 3,
-    playbookName: "Application Layer Attack Response",
+    playbookName: "Application Layer Response",
     status: "completed",
     executedAt: "2026-06-02 13:45:20",
     duration: "1m 30s",
@@ -88,57 +89,54 @@ export default function PlaybooksManagement() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
-        return <CheckCircle className="w-5 h-5 text-emerald-500" />;
+        return <CheckCircle className="w-4 h-4 text-[#8a9a86]" />;
       case "in_progress":
-        return <Clock className="w-5 h-5 text-amber-500 animate-spin" />;
+        return <Clock className="w-4 h-4 text-[#d9c06c] animate-spin" />;
       case "failed":
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return <AlertCircle className="w-4 h-4 text-[#e05a5a]" />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-      <div className="max-w-7xl mx-auto">
+    <DashboardLayout>
+      <div className="space-y-8">
         {/* Header */}
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
-            <Zap className="w-8 h-8 text-cyan-400" />
-            Attack Response Playbooks
-          </h1>
-          <p className="text-slate-400">Automated mitigation workflows for different attack types</p>
+        <div className="animate-fade-in-up border-l-2 border-[#c5a880] pl-4">
+          <h1 className="text-3xl font-serif text-[#c5a880] uppercase tracking-wider mb-1">Response Playbooks</h1>
+          <p className="text-xs text-muted-foreground font-mono">Deploy modular automation steps for active threat vectors</p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 mb-8">
+        <div className="flex gap-3 animate-fade-in-up">
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white gap-2">
-                <Plus className="w-4 h-4" />
+              <Button className="bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none px-5 h-10">
+                <Plus className="w-4 h-4 mr-1.5" />
                 Create Custom Playbook
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-slate-700">
-              <DialogHeader>
-                <DialogTitle className="text-white">Create Custom Playbook</DialogTitle>
+            <DialogContent className="bg-[#13151a] border-[#c5a880]/20 rounded-none max-w-md">
+              <DialogHeader className="border-b border-[#c5a880]/10 pb-4">
+                <DialogTitle className="font-serif text-[#c5a880] uppercase tracking-wider text-sm">Create Custom Playbook</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 pt-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-300">Playbook Name</label>
-                  <Input placeholder="e.g., Custom DDoS Response" className="bg-slate-700 border-slate-600 text-white mt-1" />
+                  <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Playbook Name</label>
+                  <Input placeholder="e.g., Custom DDoS Response" className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs mt-1" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-300">Description</label>
-                  <Textarea placeholder="Describe the playbook..." className="bg-slate-700 border-slate-600 text-white mt-1" />
+                  <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Description</label>
+                  <Textarea placeholder="Describe the playbook..." className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 font-mono text-xs mt-1" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-300">Attack Type</label>
+                  <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Attack Type Target</label>
                   <Select>
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white mt-1">
+                    <SelectTrigger className="rounded-none bg-[#13151a]/20 border-[#c5a880]/15 text-xs font-mono mt-1">
                       <SelectValue placeholder="Select attack type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectContent className="rounded-none bg-[#13151a] border-[#c5a880]/15 font-mono text-xs">
                       <SelectItem value="volumetric">Volumetric</SelectItem>
                       <SelectItem value="protocol">Protocol</SelectItem>
                       <SelectItem value="application_layer">Application Layer</SelectItem>
@@ -146,7 +144,7 @@ export default function PlaybooksManagement() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white" onClick={() => setIsCreating(false)}>
+                <Button className="w-full bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none mt-2" onClick={() => setIsCreating(false)}>
                   Create Playbook
                 </Button>
               </div>
@@ -155,49 +153,52 @@ export default function PlaybooksManagement() {
 
           <Button
             variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            className="border-[#c5a880]/30 hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[10px] uppercase h-10 px-5"
             onClick={() => setShowExecutionHistory(!showExecutionHistory)}
           >
             <History className="w-4 h-4 mr-2" />
-            Execution History
+            Execution History Logs
           </Button>
         </div>
 
         {/* Playbook Templates */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {PLAYBOOK_TEMPLATES.map((playbook, idx) => (
             <Card
               key={idx}
-              className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 hover:border-cyan-500 transition-all duration-300 cursor-pointer group"
+              className="glass-card rounded-none border-[#c5a880]/15 hover:border-[#c5a880]/40 transition-all duration-300 cursor-pointer group"
               onClick={() => setSelectedPlaybook(playbook)}
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">{playbook.name}</h3>
-                    <Badge className="mt-2 bg-cyan-500/20 text-cyan-300 border-cyan-500/50">
+                    <h3 className="text-sm font-serif uppercase tracking-wider text-[#e2e8f0] group-hover:text-[#c5a880] transition-colors">{playbook.name}</h3>
+                    <Badge className="mt-2.5 border-[#c5a880]/35 text-[#c5a880] bg-[#c5a880]/5 rounded-none font-mono text-[8px] uppercase">
                       {playbook.attackType.replace("_", " ")}
                     </Badge>
                   </div>
-                  <Zap className="w-5 h-5 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Zap className="w-4 h-4 text-[#c5a880] opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
 
-                <p className="text-sm text-slate-400 mb-4">{playbook.description}</p>
+                <p className="text-[10px] font-mono text-muted-foreground mb-4 min-h-[30px]">{playbook.description}</p>
 
-                <div className="space-y-2 mb-4">
+                <div className="space-y-2 mb-4 border-t border-[#c5a880]/10 pt-3">
                   {playbook.steps.map((step, stepIdx) => (
-                    <div key={stepIdx} className="flex items-center gap-2 text-xs text-slate-400">
-                      <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                    <div key={stepIdx} className="flex items-center gap-2 text-[9px] font-mono text-muted-foreground">
+                      <div className="w-1 h-1 rounded-none bg-[#c5a880]" />
                       {step.description}
                     </div>
                   ))}
                 </div>
 
                 <Button
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white gap-2"
-                  onClick={() => handleExecutePlaybook(playbook.name)}
+                  className="w-full border border-[#c5a880]/30 bg-transparent hover:bg-[#c5a880]/5 text-[#c5a880] rounded-none font-mono text-[10px] uppercase h-8 mt-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExecutePlaybook(playbook.name);
+                  }}
                 >
-                  <Play className="w-4 h-4" />
+                  <Play className="w-3 h-3 mr-1.5" />
                   Execute Playbook
                 </Button>
               </div>
@@ -207,90 +208,91 @@ export default function PlaybooksManagement() {
 
         {/* Execution History */}
         {showExecutionHistory && (
-          <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 animate-fade-in">
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <History className="w-5 h-5 text-cyan-400" />
-                Recent Executions
-              </h2>
-
+          <Card className="glass-card rounded-none border-[#c5a880]/15 animate-fade-in">
+            <CardHeader className="border-b border-[#c5a880]/10 pb-4">
+              <CardTitle className="text-[#c5a880] font-serif text-sm tracking-wider uppercase flex items-center gap-2">
+                <History className="w-4 h-4" />
+                Recent Execution History Logs
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
               <div className="space-y-3">
                 {EXECUTION_HISTORY.map((execution) => (
                   <div
                     key={execution.id}
-                    className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg border border-slate-600 hover:border-cyan-500/50 transition-colors"
+                    className="flex items-center justify-between p-4 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none hover:border-[#c5a880]/30 transition-colors"
                   >
                     <div className="flex items-center gap-4 flex-1">
                       {getStatusIcon(execution.status)}
                       <div>
-                        <p className="font-medium text-white">{execution.playbookName}</p>
-                        <p className="text-xs text-slate-400">{execution.executedAt}</p>
+                        <p className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0]">{execution.playbookName}</p>
+                        <p className="text-[10px] font-mono text-muted-foreground mt-0.5">{execution.executedAt}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <Badge
                         className={
                           execution.status === "completed"
-                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
+                            ? "border-[#8a9a86]/30 text-[#8a9a86] bg-[#8a9a86]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5"
                             : execution.status === "in_progress"
-                              ? "bg-amber-500/20 text-amber-300 border-amber-500/50"
-                              : "bg-red-500/20 text-red-300 border-red-500/50"
+                              ? "border-[#d9c06c]/30 text-[#d9c06c] bg-[#d9c06c]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5 animate-pulse"
+                              : "border-[#e05a5a]/30 text-[#e05a5a] bg-[#e05a5a]/5 rounded-none font-mono text-[9px] uppercase px-1.5 py-0.5"
                         }
                       >
                         {execution.status}
                       </Badge>
-                      <p className="text-xs text-slate-400 mt-1">{execution.duration}</p>
+                      <p className="text-[9px] font-mono text-muted-foreground mt-1.5">{execution.duration}</p>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </CardContent>
           </Card>
         )}
 
         {/* Playbook Details Modal */}
         {selectedPlaybook && (
           <Dialog open={!!selectedPlaybook} onOpenChange={() => setSelectedPlaybook(null)}>
-            <DialogContent className="bg-slate-800 border-slate-700 max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-white">{selectedPlaybook.name}</DialogTitle>
+            <DialogContent className="bg-[#13151a] border-[#c5a880]/20 rounded-none max-w-2xl">
+              <DialogHeader className="border-b border-[#c5a880]/10 pb-4">
+                <DialogTitle className="font-serif text-[#c5a880] uppercase tracking-wider text-sm">{selectedPlaybook.name}</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 pt-4">
                 <div>
-                  <p className="text-sm text-slate-400 mb-2">Description</p>
-                  <p className="text-white">{selectedPlaybook.description}</p>
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">Operational Summary</p>
+                  <p className="text-xs font-mono text-[#e2e8f0]">{selectedPlaybook.description}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-400 mb-2">Mitigation Steps</p>
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Automated Mitigation Sequences</p>
                   <div className="space-y-2">
                     {selectedPlaybook.steps.map((step, idx) => (
-                      <div key={idx} className="flex items-start gap-3 p-3 bg-slate-700/50 rounded border border-slate-600">
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold flex-shrink-0">
+                      <div key={idx} className="flex items-start gap-3 p-3 bg-[#13151a]/30 border border-[#c5a880]/10 rounded-none">
+                        <div className="flex items-center justify-center w-5 h-5 rounded-none border border-[#c5a880]/30 bg-[#c5a880]/5 text-[#c5a880] text-[10px] font-mono flex-shrink-0">
                           {idx + 1}
                         </div>
                         <div>
-                          <p className="font-medium text-white">{step.action}</p>
-                          <p className="text-sm text-slate-400">{step.description}</p>
+                          <p className="font-serif text-xs uppercase tracking-wider text-[#e2e8f0]">{step.action}</p>
+                          <p className="text-[10px] font-mono text-muted-foreground mt-0.5">{step.description}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
                 <Button
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white gap-2"
+                  className="w-full bg-[#c5a880] text-[#0d0e12] hover:bg-[#b09670] font-mono text-xs uppercase tracking-wider rounded-none mt-2"
                   onClick={() => {
                     handleExecutePlaybook(selectedPlaybook.name);
                     setSelectedPlaybook(null);
                   }}
                 >
-                  <Play className="w-4 h-4" />
-                  Execute This Playbook
+                  <Play className="w-4 h-4 mr-2" />
+                  Commit & Execute Playbook
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
         )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
