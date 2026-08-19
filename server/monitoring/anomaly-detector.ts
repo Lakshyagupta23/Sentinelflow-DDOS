@@ -1,4 +1,5 @@
 import * as db from "../db";
+import { ENV } from "../_core/env";
 import { realtimeServer } from "../websocket";
 import { executePlaybook } from "../playbook-engine-db";
 import { nanoid } from "nanoid";
@@ -116,7 +117,8 @@ export function startAnomalyDetector() {
       // Query Python ML Service for prediction
       let prediction = { anomaly: false, score: 0.0 };
       try {
-        const mlResponse = await fetch("http://127.0.0.1:5000/predict", {
+        const mlPredictUrl = `${ENV.mlServiceUrl.replace(/\/$/, "")}/predict`;
+        const mlResponse = await fetch(mlPredictUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
