@@ -1,5 +1,6 @@
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import { InsertUser, users, attacks, trafficMetrics, alerts, mitigationRules, alertConfigs, auditLogsExtended, topAttackVectors } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -9,7 +10,19 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      const url = process.env.DATABASE_URL;
+      const cleanUrl = url.split("?")[0];
+      const useSsl = url.includes("ssl=") || url.includes("tidbcloud");
+      
+      const pool = mysql.createPool({
+        uri: cleanUrl,
+        ssl: useSsl ? { rejectUnauthorized: true } : undefined,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
+      });
+
+      _db = drizzle(pool);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
